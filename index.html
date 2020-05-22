@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Reactive Programming</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Helvetica'; color: white; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+        color: #DBDAB1;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      .remark-slide-content { font-size: 24px; }
+
+      table {
+        border-collapse: collapse;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      th, td {
+        padding: 10px 40px;
+        border: 1px solid #DDDDDD;
+      }
+
+      th {
+        background-color: #444444;
+      }
+
+      a {
+        color: #AA88FF;
+        text-decoration: none;
+      }
+
+      .column:first-of-type {float:left}
+	  .column:last-of-type {float:right}
+
+	  .split-30 .column:first-of-type {width: 30%}
+	  .split-30 .column:last-of-type {width: 70%}
+
+      .panel-image img {
+        max-width: 80%;
+        max-height: 400px;
+      }
+
+      .title {
+        font-size: 80px;
+      }
+
+      .black {
+        color: black;
+      }
+
+      .agenda ol {
+        font-size: 28px;
+      }
+
+      .biggerCode {
+        font-size: 40px !important;
+      }
+
+      #turtleContainer {
+        position: absolute;
+        width: 100%;
+        height: 120px;
+        overflow: hidden;
+        bottom: 10px;
+      }
+
+      .animate {
+        position: relative;
+        left: 10px;
+        top: 20px;
+        transition: left;
+        z-index: 10;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="turtleContainer">
+      <img class="animate" src="Images/Turtle.png">
+      <div></div>
+      <img class="animate" src="Images/Blindflug_Logo.svg" alt="Blindflug Studios" width="120"/>
+    </div>
+    <textarea id="source">
+
+layout: true
+background-color: #272822
+
+---
+
+class: center, middle
+# .title[Programowanie Reaktywne]
+## narzędzie do walki z asynchronicznymi potworami
+
+---
+
+# Radosław Paszkowski
+## Twitter - @RadekPaszkowski
+
+<div class="column"><img src="Images/Me.jpg" alt="Radek Paszkowski" width="284"/></div>
+<div class="column">
+.center[<img src="Images/Blindflug_Logo.svg" alt="Blindflug Studios" width="500"/>
+<!-- space to put it in the next line -->
+
+<img src="Images/Polibuda.png" alt="Politechnika Poznańska" width="200"/>
+<img src="Images/pyramidahublogo.svg" alt="Pyramida Hub" width="200"/>]
+</div>
+
+---
+
+# Kim jesteśmy
+
+.center[.panel-image[![Blindflug Studios](Images/Blindflug_Logo.svg)]]
+.center[.panel-image[![First Strike](Images/FirstStrike.png)]]
+
+---
+
+# Kim jesteśmy
+
+<div class="column"><img src="Images/Team.jpg" alt="Team" width="284"/></div>
+<div class="column">
+.center[<img src="Images/Stellar_Banner.jpg" alt="Blindflug Studios" width="500"/>
+<!-- space to put it in the next line -->
+  
+<img src="Images/SC1.jpg" alt="Stellar Commanders" width="300"/>
+<img src="Images/SC2.jpg" alt="Stellar Commanders" width="300"/>
+<img src="Images/SC3.jpg" alt="Stellar Commanders" width="400"/>]
+</div>
+
+---
+
+class:center, middle
+# .title[Problem: **Asynchroniczność**]
+
+---
+
+name:Asynchronous
+
+# Co to programowanie asynchroniczne?
+
+<div class="center"><img src="Images/AsyncModel.png" alt="AsyncModel" style="max-width: 80%; max-height: 500px;"></div>
+
+---
+
+name:Issues
+
+# Problemy programowania asynchronicznego
+--
+
+2.&nbspCzytelność  
+--
+
+2.&nbspDebuggowanie  
+--
+
+1.&nbspSynchronizacja  
+--
+
+4.&nbspObsługa błędów  
+--
+
+.center[.panel-image[![AsyncIssues](Images/AsyncIssues.png)]]
+źródło: https://www.quora.com/What-are-the-challenges-of-doing-asynchronous-programming
+
+---
+
+# Rozwiązania
+
+- Coroutines/Update  
+  *Tylko do rzeczy zmieniających się co klatkę*  
+
+--
+
+- Callbacks/Events  
+  *Łatwo prowadzi do Callback Hell*  
+
+---
+
+# Callbacks Graf
+
+.center[.panel-image[![CallbackGraph](Images/CallbackGraph.png)]]
+
+---
+
+# Rozwiązania
+
+- Coroutines/Update   
+  *Tylko do rzeczy zmieniających się co klatkę*  
+
+- Callbacks  
+  *Łatwo prowadzi do Callback Hell*  
+
+- Promise/Future (TaskCompletionSource/Task)  
+  *Callback Hell, ale łatwiejsza obsługa wielu wątków oraz czekania na zakończenie wszystkich albo jednego z zadania. Za to trudniejsze debugowanie.*
+
+---
+
+# Promise/Future Graf
+
+.center[.panel-image[![PromiseGraph](Images/PromiseGraph.png)]]
+
+---
+
+# Rozwiązania
+
+- Coroutines/Update  
+  *Tylko do rzeczy zmieniających się co klatkę*  
+
+- Callbacks/Events  
+  *Łatwo prowadzi do Callback Hell*  
+
+- Promise/Future (TaskCompletionSource/Task)  
+  *Callback Hell, ale łatwiejsza obsługa wielu wątków oraz czekania na zakończenie wszystkich albo jednego z zadania. Za to trudniejsze debugowanie.*
+
+- Async/Await  
+  *Nadaje się do sekwencji czekania. Nadal trudne debuggowanie.*
+
+---
+
+# Async/Await Graf
+
+.center[.panel-image[![AwaitGraph](Images/AwaitGraph.png)]]
+
+---
+
+# Rozwiązania
+
+- Coroutines  
+  *Tylko do rzeczy zmieniających się co klatkę*  
+
+- Callbacks/Events  
+  *Łatwo prowadzi do Callback Hell*  
+
+- Promise/Future (TaskCompletionSource/Task)  
+  *Callback Hell, ale łatwiejsza obsługa wielu wątków oraz czekania na zakończenie wszystkich albo jednego z zadania. Za to trudniejsze debugowanie.*
+
+- Async/Await  
+  *Nadaje się do sekwencji czekania. Nadal trudne debuggowanie.*
+
+- Programowanie reaktywne  
+  *Hmmmm...*
+
+---
+
+# Graf z piekła rodem
+
+.center[.panel-image[![HellGraph](Images/HellGraph.png)]]
+
+---
+
+
+# Callback Hell 1
+
+```cs
+public void CallbackHell1()
+{
+    Load(source1, OnLoaded1);
+}
+
+private void OnLoaded1()
+{
+    Load(source2, OnLoaded2);
+}
+
+private void OnLoaded2()
+{
+    Load(source3, OnLoaded3);
+}
+
+private void OnLoaded3()
+{
+  ...
+}
+```
+
+---
+
+# Callback Hell 2
+
+```cs
+public void CallbackHell2()
+{
+    Load(source1, () => {
+        Load(source2, () => {
+            Load(source3, () => {
+                ...
+            });
+        });
+    });
+}
+```
+
+---
+
+# Programowanie reaktywne - Co to?
+
+.center[In computing, reactive programming is a declarative programming paradigm concerned with data streams and the propagation of change.]  
+.center[*W informatyce, reaktywne programowanie to paradygmant programowania deklaratywnego związanego ze strumieniami danych oraz propagacją zmiany.*]  
+źródło: https://en.wikipedia.org/wiki/Reactive_programming
+
+--
+
+<div style="padding-bottom: 40px;"></div>
+### .center[Eeeee, że co?]
+
+---
+
+# Programowanie reaktywne - Co to? Take #2
+
+.center[The Reactive Extensions (Rx) is a library for composing asynchronous and event-based programs using observable sequences and LINQ-style query operators.]  
+.center[*Reactive eXtensions (Rx) to biblioteka do tworzenia asynchronicznych i opartych o wydarzenia programów używając obserwowalnych sekwencji i operatorów zapytań w stylu LINQ.*]  
+źródło: https://archive.codeplex.com/?p=rx
+
+--
+
+<div style="padding-bottom: 40px;"></div>
+### .center[Zbyt wiele Microsoftu]
+
+---
+
+# Programowanie reaktywne - Co to? Take #3
+
+.center[Reactive programming is programming with asynchronous data streams.]  
+.center[*Programowanie reaktywne to programowanie z asynchronicznymi strumieniami danych.*]  
+źródło: https://gist.github.com/staltz/868e7e9bc2a7b8c1f754
+
+--
+
+.center[.panel-image[![Example-Stream](Images/ExampleStream.png)]]
+
+---
+
+# Programowanie reaktywne - Co to? Take #4
+
+.center[ReactiveX is a combination of the best ideas from the **Observer** pattern, the **Iterator** pattern, and **functional programming**.]  
+.center[*ReactiveX to połączenie najlepszych pomysłów z wzorca **Observer**, **Iterator** oraz **programowania funkcyjnego**.*]  
+źródło: http://reactivex.io/
+
+---
+
+# Observer
+
+.center[.panel-image[![Observer](Images/Observer.png)]]
+
+---
+
+# Iterator
+
+.center[.panel-image[![Iterator](Images/Iterator.png)]]
+
+---
+
+# Programowanie funkcyjne
+
+.center[.panel-image[![Functional Programming](Images/Functional.png)]]
+
+---
+
+# Programowanie reaktywne - Model
+
+.center[.panel-image[![Reactive Model](Images/ReactiveModel.png)]]
+
+---
+
+# Programowanie reaktywne - Model
+
+.center[.panel-image[![Reactive Model Recursive](Images/ReactiveModelRecursive.png)]]
+
+---
+
+# Programowanie reaktywne - Model
+
+.center[.panel-image[![Reactive Model Subject](Images/ReactiveModelSubject.png)]]
+
+---
+
+# Mantra programowania reaktywnego
+
+.center[.panel-image[![Everything is a stream](Images/meme.png)]]
+
+---
+
+# Programowanie reaktywne - Biblioteki
+
+<div class="column"><img src="Images/ReactiveXLogo.png" alt="ReactiveX Logo" width="400"/></div>
+<div class="column"><img src="Images/UniRX.jpg" alt="UniRX" width="500" style="margin-left: 60px;"/></div>
+
+---
+
+# Przykłady - Kliknięcie myszy
+
+.center[.panel-image[![Mouse Click](Images/MouseClick.png)]]
+
+---
+
+# Przykłady - Kliknięcie myszy RX
+
+.center[.panel-image[![Mouse Up Stream](Images/MouseUpStream.png)]]
+
+---
+
+# Przykłady - Przeciągnij i upuść
+
+.center[.panel-image[![Mouse Drag](Images/MouseDrag.png)]]
+
+---
+
+# Przykłady - Przeciągnij i upuść RX
+
+
+.center[.panel-image[![Mouse Down Map](Images/MouseDownMap.png)]]
+
+---
+
+# Przykłady - Przeciągnij i upuść RX
+
+.center[.panel-image[![Mouse Up Combine Filter](Images/MouseUpCombineFilter.png)]]
+
+---
+
+# Przykłady - Wyświetlanie UI
+
+Zadanie:
+1. Gdy wciśniemy przycisk 'H' pasek jest zawsze wyświetlony
+2. Gdy życia są poniżej 20% pasek życia świeci się cały czas
+3. Jeżeli życia są powyżej 20%
+  1. Jeżeli jesteśmy poza walką to pasek życia widoczny jest tylko gdy nastąpi zmiana punktów życia
+  2. Jeżeli jesteśmy podczas walki to 
+      1. Jeżeli stoimy przez dłużej niż 5 sekund pasek życia się chowa
+          - Chyba że nastąpi zmiana puntów życia
+      2. W przeciwnym wypadku pasek życia jest widoczny
+
+Pasek życia zawsze jest widoczny przez minimum 5 sekund.
+
+---
+
+# Przykłady - Wyświetlanie UI
+
+.center[.panel-image[![Health Viewer](Images/HealthViewer.png)]]
+
+---
+
+# Przykłady - Czekanie na zakończenie pracy wątku
+
+.center[.panel-image[![Wait For Worker](Images/WaitForWorker.png)]]
+
+---
+
+# Programowanie reaktywne - Nowy Trend
+
+.center[.panel-image[![ReactiveX](Images/ReactiveX.png)]]
+źródło: http://reactivex.io/
+
+---
+
+class: middle, center
+
+# Wszystko jest strumieniem ;)
+
+---
+
+# Źródła
+
+1. https://github.com/neuecc/UniRx
+2. https://gist.github.com/staltz/868e7e9bc2a7b8c1f754
+3. https://rxmarbles.com/
+4. http://reactivex.io/
+5. https://en.wikipedia.org/wiki/Reactive_programming
+6. https://medium.com/@davidjtomczyk/introduction-to-observable-85a5122bf260
+
+    </textarea>
+    <script src="remark.min.js" type="text/javascript">
+    </script>
+    <script src="remark-zoom.js" type="text/javascript">
+    </script>
+    <script>
+      var slideshow = remark.create({
+        ratio: '16:9',
+        highlightLanguage: 'cs',
+        highlightStyle: 'vs',
+        highlightLines: true
+      });
+
+      var animations = document.getElementsByClassName("animate");
+      var time = 0;
+      var presentationTime = 45 * 60 * 1000;
+      var screenWidth = screen.width - 100;
+      var rotateMax = 6;
+      var speed = 0.001;
+
+      function update() {
+        time += 16;
+
+        /*var position = screenWidth * (time / presentationTime);
+        if (position > screenWidth)
+          position = screenWidth;
+        turtle.style.left = position + "px";*/
+
+        var rotate = Math.sin(time * speed) * rotateMax;
+        for (var i = 0; i < animations.length; ++i)
+        {
+          animations[i].style.transform = "rotate(" + rotate + "deg)";
+        }
+      }
+
+      (function() {
+        setInterval(update, 16);
+      })();
+    </script>
+  </body>
+</html>
